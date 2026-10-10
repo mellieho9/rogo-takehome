@@ -22,6 +22,13 @@ body {
   gap: 20px;
 }
 
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
 header h1 {
   margin: 0 0 4px;
   font-size: 20px;
@@ -40,17 +47,17 @@ header p {
   gap: 12px;
 }
 
-.examples {
+.chips {
   display: flex;
   flex-direction: column;
   gap: 8px;
   align-items: flex-start;
 }
 
-.examples button {
+.chips button {
   border: 1px solid #dde2e8;
   background: #fff;
-  border-radius: 999px;
+  border-radius: 14px;
   padding: 8px 14px;
   font-size: 13px;
   color: #33414f;
@@ -58,7 +65,7 @@ header p {
   text-align: left;
 }
 
-.examples button:hover {
+.chips button:hover {
   border-color: #b9c2cc;
 }
 
@@ -67,11 +74,11 @@ header p {
   border-radius: 12px;
   font-size: 14px;
   line-height: 1.55;
-  white-space: pre-wrap;
   max-width: 88%;
 }
 
 .bubble.user {
+  white-space: pre-wrap;
   align-self: flex-end;
   background: #12181f;
   color: #fff;
@@ -83,8 +90,347 @@ header p {
   border: 1px solid #e4e8ed;
 }
 
-.bubble.pending {
+/* Keep the progress card from widening as longer step labels arrive. */
+.bubble.assistant.working {
+  width: min(480px, 88%);
+}
+
+.bubble.assistant.error {
+  border-color: #f0c8c4;
+  background: #fff8f7;
+  color: #8a2a1f;
+}
+
+.bubble.assistant.error p {
+  margin: 0 0 8px;
+}
+
+.bubble.assistant.clarification {
+  border-color: #c9d6f2;
+  background: #f7f9ff;
+}
+
+/* Progress: vertical stepper */
+
+.stepper {
+  --node: 18px;
+  --line: #e1e6ec;
+  --done: #2f8a57;
+  --running: #2a4f9e;
+  --failed: #c0442f;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 13px;
+}
+
+.stepper li {
+  position: relative;
+  display: flex;
+  gap: 10px;
+  padding-bottom: 14px;
+  color: #33414f;
+}
+
+.stepper li:last-child {
+  padding-bottom: 0;
+}
+
+/* The connector to the next step; filled in once this step is done. */
+.stepper li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: calc(var(--node) / 2 - 1px);
+  top: calc(var(--node) + 2px);
+  bottom: 2px;
+  width: 2px;
+  border-radius: 1px;
+  background: var(--line);
+}
+
+.stepper li.done:not(:last-child)::after {
+  background: var(--done);
+}
+
+.stepper .node {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--node);
+  height: var(--node);
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  background: #fff;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.stepper li.done .node {
+  background: var(--done);
+  border-color: var(--done);
+}
+
+.stepper li.failed .node {
+  background: var(--failed);
+  border-color: var(--failed);
+}
+
+.stepper li.running .node {
+  border-color: #d3def5;
+  border-top-color: var(--running);
+  animation: spin 0.8s linear infinite;
+}
+
+/* Model "thinking" steps get a smaller node than research lookups. */
+.stepper li.model:not(.running) .node {
+  transform: scale(0.75);
+}
+
+.stepper .content {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  min-height: var(--node);
+  padding-top: 1px;
+}
+
+.stepper li.running .label {
+  color: #12181f;
+  font-weight: 600;
+}
+
+.stepper li.pending .label {
+  color: #a3adb8;
+}
+
+.stepper li.model .label {
+  color: #62707f;
+}
+
+.stepper li.model.running .label {
+  color: #12181f;
+}
+
+.stepper .detail {
   color: #8b97a3;
+  font-size: 12px;
+}
+
+.stepper li.failed .label,
+.stepper li.failed .detail {
+  color: var(--failed);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+details.summary {
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: #62707f;
+}
+
+details.summary > summary {
+  cursor: pointer;
+  user-select: none;
+}
+
+details.summary .stepper {
+  margin: 8px 0 4px;
+  padding: 8px 10px;
+  background: #f6f7f9;
+  border-radius: 8px;
+}
+
+/* Answer markdown */
+
+.answer > :first-child {
+  margin-top: 0;
+}
+
+.answer > :last-child {
+  margin-bottom: 0;
+}
+
+.answer p,
+.answer ul,
+.answer ol {
+  margin: 0 0 10px;
+}
+
+.answer ul,
+.answer ol {
+  padding-left: 20px;
+}
+
+.answer h1,
+.answer h2,
+.answer h3,
+.answer h4 {
+  font-size: 14px;
+  margin: 14px 0 6px;
+}
+
+.answer table {
+  border-collapse: collapse;
+  margin: 6px 0 12px;
+  font-size: 13px;
+  display: block;
+  overflow-x: auto;
+}
+
+.answer th,
+.answer td {
+  border: 1px solid #e4e8ed;
+  padding: 5px 9px;
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+}
+
+.answer th {
+  background: #f6f7f9;
+  font-weight: 600;
+}
+
+.answer code {
+  font-size: 12px;
+  background: #f1f3f6;
+  padding: 1px 4px;
+  border-radius: 4px;
+}
+
+/* Citations */
+
+.cite {
+  margin-left: 2px;
+  font-size: 10px;
+  line-height: 0;
+  vertical-align: 0.45em;
+}
+
+/* Numbered circles, shared by inline citations and the Sources list. */
+.cite a,
+.cite.unverified,
+.source-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #e8eef9;
+  color: #2a4f9e;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.cite a:hover {
+  background: #2a4f9e;
+  color: #fff;
+}
+
+.cite.unverified {
+  background: #fdecd8;
+  color: #9a5a12;
+  cursor: help;
+}
+
+.source-num {
+  flex-shrink: 0;
+  margin-right: 2px;
+}
+
+.sources-label {
+  margin: 12px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid #eef1f4;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #8b97a3;
+}
+
+.sources {
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  color: #33414f;
+}
+
+.sources li {
+  margin-bottom: 4px;
+  border-radius: 6px;
+}
+
+.sources li.flash {
+  animation: flash 1.2s ease-out;
+}
+
+@keyframes flash {
+  from {
+    background: #e8eef9;
+  }
+  to {
+    background: transparent;
+  }
+}
+
+.sources summary {
+  cursor: pointer;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 8px;
+  list-style: none;
+}
+
+.sources summary::-webkit-details-marker {
+  display: none;
+}
+
+.sources .source-meta {
+  color: #8b97a3;
+}
+
+.sources details p {
+  margin: 6px 0 8px;
+  padding: 8px 10px;
+  background: #f6f7f9;
+  border-radius: 6px;
+  line-height: 1.5;
+}
+
+.chips.followups {
+  margin-top: 12px;
+}
+
+button.ghost {
+  border: 1px solid #dde2e8;
+  background: #fff;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  color: #33414f;
+  cursor: pointer;
+}
+
+button.ghost:disabled {
+  opacity: 0.55;
+  cursor: default;
 }
 
 .composer {
@@ -119,4 +465,27 @@ header p {
 .composer input:disabled {
   opacity: 0.55;
   cursor: default;
+}
+
+button.home {
+  all: unset;
+  cursor: pointer;
+}
+
+/* Blinking caret at the end of an answer that's still streaming in. */
+.answer.streaming > :last-child::after {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: -0.15em;
+  background: #2a4f9e;
+  animation: blink 1s steps(2, start) infinite;
+}
+
+@keyframes blink {
+  to {
+    visibility: hidden;
+  }
 }
